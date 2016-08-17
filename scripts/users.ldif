@@ -1,0 +1,8 @@
+dn: uid=%USER_UID%,ou=Users,%SUFFIX%
+objectclass: inetOrgPerson
+cn: %USER_GIVEN_NAME% %USER_SURNAME%
+sn: %USER_SURNAME%
+uid: %USER_UID%
+userpassword: %USER_PW%
+mail: %USER_EMAIL%
+ou: Users

@@ -1,0 +1,11 @@
+# base distingushed name
+BASE            dc=example,dc=com
+
+# ssl localhost location
+URI             ldaps://localhost
+
+# certificate location
+TLS_CACERT      /vagrant/certs/ca.pem
+TLS_CERT        /vagrant/certs/public.crt
+TLS_KEY         /vagrant/certs/public.key
+TLS_REQCERT     demand

@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+
+  cert:
+    image: pgarrett/openssl
+    container_name: cert
+    volumes:
+      - ./certs:/etc/ssl/certs
+
+  ldap:
+    image: pgarrett/ldap
+    container_name: ldap
+    ports:
+      - 636:636
+    volumes_from:
+     - cert
