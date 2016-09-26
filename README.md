@@ -73,9 +73,34 @@ Override the following environment variables when running the docker container t
 For example:
 
 ```
-docker run \
+docker run -v /certs:/etc/ssl/certs \
+  pgarrett/openssl-alpine
+
+docker run -v /certs:/etc/ssl/certs \
+  -p 636:636 \
   -e ORGANISATION_NAME="Beispiel gmbh" \
   -e SUFFIX="dc=beispiel,dc=de" \
-  -e ROOT_PW="geheimnis"
+  -e ROOT_PW="geheimnis" \
+  pgarrett/ldap-alpine
+```
+
+## Add ldif files
+
+Copy ldif scripts to /ldif and the container will execute them. This can be done either by extending this Dockerfile with your own:
+
+```
+FROM pgarrett/ldap-alpine
+COPY my-users.ldif /ldif/
+```
+
+Or by mounting your scripts directory into the container:
+
+```
+docker run -v /certs:/etc/ssl/certs \
+  pgarrett/openssl-alpine
+
+docker run -v /certs:/etc/ssl/certs \
+  -p 636:636 \
+  -v /my-ldif:/ldif \
   pgarrett/ldap-alpine
 ```

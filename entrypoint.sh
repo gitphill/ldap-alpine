@@ -53,6 +53,16 @@ sed -i "s~%USER_EMAIL%~$USER_EMAIL~g" "$USER_CONF"
 slapadd -l "$ORG_CONF"
 slapadd -l "$USER_CONF"
 
+# add any scripts in ldif
+for l in /ldif/*; do
+  case "$l" in
+    *.ldif)  echo "ENTRYPOINT: adding $l";
+            slapadd -l $l
+            ;;
+    *)      echo "ENTRYPOINT: ignoring $l" ;;
+  esac
+done
+
 # start ldap
 slapd -d stats -h 'ldaps:///'
 

@@ -9,7 +9,7 @@ services:
       - ./certs:/etc/ssl/certs
 
   ldap:
-    image: pgarrett/ldap
+    image: pgarrett/ldap-alpine
     container_name: ldap
     ports:
       - 636:636

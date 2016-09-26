@@ -29,3 +29,5 @@ EXPOSE 636
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
+
+VOLUME ["/ldif"]
