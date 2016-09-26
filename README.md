@@ -1,4 +1,4 @@
-# LDAP
+# LDAP Alpine
 
 The Lightweight Directory Access Protocol (LDAP) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an Internet Protocol (IP) network.
 
@@ -28,7 +28,7 @@ make build
 
 ### Run container
 
-Performs a build then runs container:
+To perform a build then run a container:
 
 ```
 make run
@@ -36,7 +36,7 @@ make run
 
 ### Tail container
 
-Performs build, runs a container then tails the logs from the container:
+To perform a build, run a container then tail the logs from the container:
 
 ```
 make up
@@ -77,5 +77,5 @@ docker run \
   -e ORGANISATION_NAME="Beispiel gmbh" \
   -e SUFFIX="dc=beispiel,dc=de" \
   -e ROOT_PW="geheimnis"
-  pgarrett/ldap
+  pgarrett/ldap-alpine
 ```
