@@ -11,7 +11,7 @@ Vagrant.configure(2) do |config|
   config.vm.hostname = "ldap.example.com"
   config.vm.network :forwarded_port, host: 636, guest: 636
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "LDAP Development"
+    vb.name = "LDAP Alpine"
     vb.memory = 1024
     vb.cpus = 2
   end

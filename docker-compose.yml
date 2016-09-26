@@ -3,7 +3,7 @@ version: '2'
 services:
 
   cert:
-    image: pgarrett/openssl
+    image: pgarrett/openssl-alpine
     container_name: cert
     volumes:
       - ./certs:/etc/ssl/certs
