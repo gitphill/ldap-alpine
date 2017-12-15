@@ -1,7 +1,9 @@
 FROM alpine
 
 # install openldap
-RUN apk add --update openldap && \
+RUN apk add --update openldap openldap-back-mdb && \
+    mkdir -p /etc/openldap && \
+    mkdir -p /run/openldap && \
     rm -rf /var/cache/apk/*
 
 # organisation config
@@ -17,15 +19,13 @@ ENV USER_GIVEN_NAME "Phill"
 ENV USER_SURNAME "Garrett"
 ENV USER_EMAIL "pgarrett@example.com"
 
-# transport layer security configuration
-ENV CA_FILE "/etc/ssl/certs/ca.pem"
-ENV CERT_KEY "/etc/ssl/certs/public.key"
-ENV CERT_FILE "/etc/ssl/certs/public.crt"
+ENV LOG_LEVEL "stats"
 
 # copy scripts and configuration
 COPY scripts/* /etc/openldap/
 
 EXPOSE 636
+EXPOSE 389
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]

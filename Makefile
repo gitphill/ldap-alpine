@@ -7,13 +7,10 @@ push:
 	docker push pgarrett/ldap-alpine .
 
 clean:
-	rm -rf ${certs_dir}; docker-compose kill; docker-compose rm -f; true
+	docker rm -f ldap; true
 
 run: build clean
-	docker-compose up -d
-
-up: build clean
-	docker-compose up
+	docker run -d --name ldap -p 389:389 pgarrett/ldap-alpine
 
 help:
-	@echo "Usage: make build|push|clean|run|up"
+	@echo "Usage: make build|push|clean|run"
