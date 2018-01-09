@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
 
@@ -9,9 +9,15 @@ services:
       - ./certs:/etc/ssl/certs
 
   ldap:
-    image: pgarrett/ldap-alpine
+    build:
+      context: .
     container_name: ldap
     ports:
       - 636:636
-    volumes_from:
-     - cert
+    environment:
+      - CA_FILE=/etc/ssl/certs/ca.pem
+      - KEY_FILE=/etc/ssl/certs/public.key
+      - CERT_FILE=/etc/ssl/certs/public.crt
+    volumes:
+      - ./certs:/etc/ssl/certs
+      - ./users.ldif:/ldif/users.ldif

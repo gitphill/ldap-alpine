@@ -2,30 +2,49 @@
 # docker entrypoint script
 # configures and starts LDAP
 
-# ensure certificates exist
-RETRY=0
-MAX_RETRIES=3
-until [ -f "$CERT_KEY" ] && [ -f "$CERT_FILE" ] && [ -f "$CA_FILE" ] || [ "$RETRY" -eq "$MAX_RETRIES" ]; do
-  RETRY=$((RETRY+1))
-  echo "Cannot find certificates. Retry ($RETRY/$MAX_RETRIES) ..."
-  sleep 1
-done
+# test for ldaps configuration
+LDAPS=true
+if [ -z "$KEY_FILE" ] || [ -z "$CERT_FILE" ] || [ -z "$CA_FILE" ]; then
+  LDAPS=false
+fi
 
-# exit if no certificates were found after maximum retries
-if [ "$RETRY" -eq "$MAX_RETRIES" ]; then
-  echo "Cannot start ldap, the following certificates do not exist"
-  echo " CA_FILE:   $CA_FILE"
-  echo " CERT_KEY:  $CERT_KEY"
-  echo " CERT_FILE: $CERT_FILE"
-  exit 1
+if [ "$LDAPS" = true ]; then
+
+  # ensure certificates exist
+  RETRY=0
+  MAX_RETRIES=3
+  until [ -f "$KEY_FILE" ] && [ -f "$CERT_FILE" ] && [ -f "$CA_FILE" ] || [ "$RETRY" -eq "$MAX_RETRIES" ]; do
+    RETRY=$((RETRY+1))
+    echo "Cannot find certificates. Retry ($RETRY/$MAX_RETRIES) ..."
+    sleep 1
+  done
+
+  # exit if no certificates were found after maximum retries
+  if [ "$RETRY" -eq "$MAX_RETRIES" ]; then
+    echo "Cannot start ldap, the following certificates do not exist"
+    echo " CA_FILE:   $CA_FILE"
+    echo " KEY_FILE:  $KEY_FILE"
+    echo " CERT_FILE: $CERT_FILE"
+    exit 1
+  fi
+
 fi
 
 # replace variables in slapd.conf
 SLAPD_CONF="/etc/openldap/slapd.conf"
 
-sed -i "s~%CA_FILE%~$CA_FILE~g" "$SLAPD_CONF"
-sed -i "s~%CERT_KEY%~$CERT_KEY~g" "$SLAPD_CONF"
-sed -i "s~%CERT_FILE%~$CERT_FILE~g" "$SLAPD_CONF"
+if [ "$LDAPS" = true ]; then
+  sed -i "s~%CA_FILE%~$CA_FILE~g" "$SLAPD_CONF"
+  sed -i "s~%KEY_FILE%~$KEY_FILE~g" "$SLAPD_CONF"
+  sed -i "s~%CERT_FILE%~$CERT_FILE~g" "$SLAPD_CONF"
+else
+  # comment out TLS configuration
+  sed -i "s~TLSCACertificateFile~#&~" "$SLAPD_CONF"
+  sed -i "s~TLSCertificateKeyFile~#&~" "$SLAPD_CONF"
+  sed -i "s~TLSCertificateFile~#&~" "$SLAPD_CONF"
+  sed -i "s~TLSVerifyClient~#&~" "$SLAPD_CONF"
+fi
+
 sed -i "s~%ROOT_USER%~$ROOT_USER~g" "$SLAPD_CONF"
 sed -i "s~%SUFFIX%~$SUFFIX~g" "$SLAPD_CONF"
 
@@ -63,8 +82,13 @@ for l in /ldif/*; do
   esac
 done
 
-# start ldap
-slapd -d stats -h 'ldaps:///'
+if [ "$LDAPS" = true ]; then
+  echo "Starting LDAPS"
+  slapd -d "$LOG_LEVEL" -h "ldaps:///"
+else
+  echo "Starting LDAP"
+  slapd -d "$LOG_LEVEL" -h "ldap:///"
+fi
 
 # run command passed to docker run
 exec "$@"
