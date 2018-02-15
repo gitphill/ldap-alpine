@@ -89,8 +89,7 @@ provide all three TLS environment variables.
 
 | VARIABLE | DESCRIPTION | EXAMPLE |
 | :------- | :---------- | :------ |
-| CA_FILE | PEM-format file containing certificates for the CA's that slapd 
-will trust | /etc/ssl/certs/ca.pem |
+| CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
 | KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
 | CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
 
