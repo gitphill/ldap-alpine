@@ -6,4 +6,4 @@ plugins:
 modules:
   - garethr-docker
 versions:
-  compose: '1.16.0'
+  compose: '1.19.0'

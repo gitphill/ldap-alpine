@@ -73,6 +73,15 @@ Or by mounting your scripts directory into the container:
 docker run -v /my-ldif:/ldif pgarrett/ldap-alpine
 ```
 
+## Persist data
+
+The container uses a standard mdb backend. To persist this database outside the
+container mount `/var/lib/openldap/openldap-data`. For example:
+
+```
+docker run -v /my-backup:/var/lib/openldap/openldap-data pgarrett/ldap-alpine
+```
+
 ## Transport Layer Security
 
 The container can be started using the encrypted LDAPS protocol. You must
@@ -80,7 +89,8 @@ provide all three TLS environment variables.
 
 | VARIABLE | DESCRIPTION | EXAMPLE |
 | :------- | :---------- | :------ |
-| CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
+| CA_FILE | PEM-format file containing certificates for the CA's that slapd 
+will trust | /etc/ssl/certs/ca.pem |
 | KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
 | CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
 

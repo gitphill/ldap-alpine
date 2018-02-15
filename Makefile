@@ -1,10 +1,7 @@
-certs_dir := $(CURDIR)/certs
+.PHONY: build clean run up down test help
 
 build:
 	docker build -t pgarrett/ldap-alpine .
-
-push:
-	docker push pgarrett/ldap-alpine .
 
 clean:
 	docker rm -f ldap; true
@@ -12,5 +9,16 @@ clean:
 run: build clean
 	docker run -d --name ldap -p 389:389 pgarrett/ldap-alpine
 
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down -v
+
+test: up
+	@sleep 2
+	@cp .ldaprc ~
+	ldapsearch "uid=pgarrett"
+
 help:
-	@echo "Usage: make build|push|clean|run"
+	@echo "Usage: make build|clean|run|up|down|test"

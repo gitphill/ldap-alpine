@@ -46,7 +46,8 @@ make run
 ## Compose
 
 To run LDAP using TLS you can run the `docker-compose.yml` which starts a
-temporary container to generate SSL certificates for the LDAP container. It then mounts those certificates into the container and configures the container with
+temporary container to generate SSL certificates for the LDAP container.
+It then mounts those certificates into the container and configures the container with
 environment variables to indicate the location of the certificate files.
 
 ```
@@ -59,8 +60,18 @@ To search ldaps:
 
 ```
 cp .ldaprc ~
-ldapsearch -x -D "cn=admin,dc=example,dc=com" -w password -b "dc=example,dc=com"
+ldapsearch
 ```
 
 Note: copying .ldaprc to the users home directory configures the ldap client
 with appropriate settings for TLS connection to LDAP.
+
+## Make
+
+For convenience the commands above have been put into a [Makefile](Makefile).
+
+To compose docker containers copy .ldaprc file and search ldap:
+
+```
+make test
+```

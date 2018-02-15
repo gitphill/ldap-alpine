@@ -1,13 +1,15 @@
+#!/usr/bin/env ruby
 # vagrant development environment
 
 # read settings file
 require "yaml"
-settings = YAML.load_file("settings.yaml")
+cd = File.dirname(__FILE__)
+settings = YAML.load_file("#{cd}/settings.yaml")
 
 # check for requried plugins
 settings["plugins"].each do |plugin|
   unless Vagrant.has_plugin?(plugin)
-    raise "Missing plugin! Run: vagrant plugin install " + plugin
+    raise "Missing plugin! Run: vagrant plugin install #{plugin}"
   end
 end
 
@@ -23,13 +25,6 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-
-  # ensure vagrant user starts in sync directory
-  config.vm.provision :shell, inline: <<-SHELL
-    if ! grep -q 'cd /vagrant' /home/vagrant/.bashrc; then
-      echo 'cd /vagrant' >> /home/vagrant/.bashrc
-    fi
-  SHELL
 
   # install puppet agent
   config.vm.provision :shell, inline: <<-SHELL
