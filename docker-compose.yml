@@ -4,14 +4,12 @@ services:
 
   cert:
     image: pgarrett/openssl-alpine
-    container_name: cert
     volumes:
       - ./certs:/etc/ssl/certs
 
   ldap:
     build:
       context: .
-    container_name: ldap
     ports:
       - 636:636
     environment:
@@ -20,4 +18,7 @@ services:
       - CERT_FILE=/etc/ssl/certs/public.crt
     volumes:
       - ./certs:/etc/ssl/certs
-      - ./users.ldif:/ldif/users.ldif
+      - ldap_data:/var/lib/openldap/openldap-data
+
+volumes:
+  ldap_data:
