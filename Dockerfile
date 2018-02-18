@@ -1,8 +1,5 @@
 FROM alpine
 
-RUN apk add --update openldap openldap-back-mdb && \
-    rm -rf /var/cache/apk/*
-
 ENV ORGANISATION_NAME "Example Ltd"
 ENV SUFFIX "dc=example,dc=com"
 ENV ROOT_USER "admin"
@@ -13,13 +10,16 @@ ENV USER_SURNAME "Garrett"
 ENV USER_EMAIL "pgarrett@example.com"
 ENV LOG_LEVEL "stats"
 
+RUN apk add --update openldap openldap-back-mdb && \
+    mkdir -p /run/openldap /var/lib/openldap/openldap-data && \
+    rm -rf /var/cache/apk/*
+
 COPY scripts/* /etc/openldap/
-
-EXPOSE 636
-EXPOSE 389
-
-VOLUME ["/ldif"]
-VOLUME ["/var/lib/openldap/openldap-data"]
-
 COPY docker-entrypoint.sh /
+
+EXPOSE 389
+EXPOSE 636
+
+VOLUME ["/ldif", "/var/lib/openldap/openldap-data"]
+
 ENTRYPOINT ["/docker-entrypoint.sh"]

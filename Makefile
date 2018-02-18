@@ -10,12 +10,13 @@ run: build clean
 	docker run -d --name ldap -p 389:389 pgarrett/ldap-alpine
 
 up:
+	docker-compose build
 	docker-compose up -d
 
 down:
 	docker-compose down -v
 
-test: up
+test: down up
 	@sleep 2
 	@cp .ldaprc ~
 	ldapsearch "uid=pgarrett"
