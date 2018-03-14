@@ -29,7 +29,7 @@ to customise LDAP:
 For example:
 
 ```
-docker run \
+docker run -t -p 389:389 \
   -e ORGANISATION_NAME="Beispiel gmbh" \
   -e SUFFIX="dc=beispiel,dc=de" \
   -e ROOT_PW="geheimnis" \
@@ -39,7 +39,7 @@ docker run \
 Search for user:
 
 ```
-ldapsearch "uid=pgarrett"
+ldapsearch -x -b "dc=beispiel,dc=de" "uid=pgarrett"
 ```
 
 ## Logging Levels
@@ -78,7 +78,7 @@ COPY my-users.ldif /ldif/
 Or by mounting your scripts directory into the container:
 
 ```
-docker run -v /my-ldif:/ldif pgarrett/ldap-alpine
+docker run -t -p 389:389 -v /my-ldif:/ldif pgarrett/ldap-alpine
 ```
 
 ## Persist data
@@ -87,7 +87,7 @@ The container uses a standard mdb backend. To persist this database outside the
 container mount `/var/lib/openldap/openldap-data`. For example:
 
 ```
-docker run -v /my-backup:/var/lib/openldap/openldap-data pgarrett/ldap-alpine
+docker run -t -p 389:389 -v /my-backup:/var/lib/openldap/openldap-data pgarrett/ldap-alpine
 ```
 
 ## Transport Layer Security
@@ -106,7 +106,7 @@ to find the SSL certificates inside the container. So the certificates must
 also be mounted at runtime too, for example:
 
 ```
-docker run \
+docker run -t -p 389:389 \
   -v /my-certs:/etc/ssl/certs \
   -e CA_FILE /etc/ssl/certs/ca.pem \
   -e KEY_FILE /etc/ssl/certs/public.key \
@@ -135,13 +135,15 @@ This following access control allows the user to modify their entry, allows anon
 and allows all others to read these entries:
 
 ```
-docker run \
-  -e ACCESS_CONTROL="access to * by self write by anonymous auth by * read" \
+docker run -t -p 389:389 \
+  -e ACCESS_CONTROL="access to * by self write by anonymous auth by users read" \
   pgarrett/ldap-alpine
 ```
 
-Now `ldapsearch "uid=pgarrett"` will fail. In order to search you will need to bind:
+Now `ldapsearch -x -b "dc=example,dc=com" "uid=pgarret"` will return no results.
+
+In order to search you will need to authenticate (bind) first:
 
 ```
-ldapsearch -D "uid=pgarrett,ou=Users,dc=example,dc=com" -w password "uid=pgarrett"
+ldapsearch -D "uid=pgarrett,ou=Users,dc=example,dc=com" -w password -b "dc=example,dc=com" "uid=pgarrett"
 ```
