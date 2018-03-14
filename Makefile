@@ -1,5 +1,7 @@
 .PHONY: build clean run up down test help
 
+default: up
+
 build:
 	docker build -t pgarrett/ldap-alpine .
 

@@ -23,15 +23,23 @@ to customise LDAP:
 | USER_SURNAME | Initial user's surname | Garrett |
 | USER_EMAIL | Initial user's email | pgarrett@example.com |
 | USER_PW | Initial user's password | password |
+| ACCESS_CONTROL | Global access control | access to * by * read |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
 
 For example:
 
 ```
-docker run -e ORGANISATION_NAME="Beispiel gmbh" \
+docker run \
+  -e ORGANISATION_NAME="Beispiel gmbh" \
   -e SUFFIX="dc=beispiel,dc=de" \
   -e ROOT_PW="geheimnis" \
   pgarrett/ldap-alpine
+```
+
+Search for user:
+
+```
+ldapsearch "uid=pgarrett"
 ```
 
 ## Logging Levels
@@ -98,7 +106,8 @@ to find the SSL certificates inside the container. So the certificates must
 also be mounted at runtime too, for example:
 
 ```
-docker run -v /my-certs:/etc/ssl/certs \
+docker run \
+  -v /my-certs:/etc/ssl/certs \
   -e CA_FILE /etc/ssl/certs/ca.pem \
   -e KEY_FILE /etc/ssl/certs/public.key \
   -e CERT_FILE /etc/ssl/certs/public.crt \
@@ -107,3 +116,32 @@ docker run -v /my-certs:/etc/ssl/certs \
 
 Where `/my-certs` on the host contains the three certificate files `ca.pem`,
 `public.key` and `public.crt`.
+
+## Access Control
+
+Global access to your directory can be configured via the ACCESS_CONTROL environment variable.
+
+The default policy allows anyone and everyone to read anything but restricts updates to rootdn.
+
+```
+access to * by * read
+```
+
+Note rootdn can always read and write *everything*!
+
+You can find detailed documentation on access control here https://www.openldap.org/doc/admin24/access-control.html
+
+This following access control allows the user to modify their entry, allows anonymous to authenticate against these entries,
+and allows all others to read these entries:
+
+```
+docker run \
+  -e ACCESS_CONTROL="access to * by self write by anonymous auth by * read" \
+  pgarrett/ldap-alpine
+```
+
+Now `ldapsearch "uid=pgarrett"` will fail. In order to search you will need to bind:
+
+```
+ldapsearch -D "uid=pgarrett,ou=Users,dc=example,dc=com" -w password "uid=pgarrett"
+```
