@@ -37,6 +37,9 @@ if [ "$LDAPS" = true ]; then
   sed -i "s~%CA_FILE%~$CA_FILE~g" "$SLAPD_CONF"
   sed -i "s~%KEY_FILE%~$KEY_FILE~g" "$SLAPD_CONF"
   sed -i "s~%CERT_FILE%~$CERT_FILE~g" "$SLAPD_CONF"
+  if [ -n "$TLS_VERIFY_CLIENT" ]; then
+    sed -i "/TLSVerifyClient/ s/demand/$TLS_VERIFY_CLIENT/" "$SLAPD_CONF"
+  fi
 else
   # comment out TLS configuration
   sed -i "s~TLSCACertificateFile~#&~" "$SLAPD_CONF"
