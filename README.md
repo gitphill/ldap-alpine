@@ -100,6 +100,7 @@ provide all three TLS environment variables.
 | CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
 | KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
 | CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
+| TLS_VERIFY_CLIENT | Slapd option for client certificate verification | try, never, demand |
 
 Note these variables inform the entrypoint script (executed on startup) where
 to find the SSL certificates inside the container. So the certificates must
@@ -116,6 +117,8 @@ docker run -t -p 389:389 \
 
 Where `/my-certs` on the host contains the three certificate files `ca.pem`,
 `public.key` and `public.crt`.
+
+To disable client certificates set `TLS_VERIFY_CLIENT` to `never` or `try`.
 
 ## Access Control
 
