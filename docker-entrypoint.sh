@@ -85,12 +85,19 @@ for l in /ldif/*; do
   esac
 done
 
-if [ "$LDAPS" = true ]; then
-  echo "Starting LDAPS"
-  slapd -d "$LOG_LEVEL" -h "ldaps:///"
+# default to listening on 389/636 if BIND_URL isn't specified
+# https://www.openldap.org/doc/admin24/runningslapd.html
+if [ -z "$BIND_URL" ]; then
+  if [ "$LDAPS" = true ]; then
+    echo "Starting LDAPS"
+    slapd -d "$LOG_LEVEL" -h "ldaps:///"
+  else
+    echo "Starting LDAP"
+    slapd -d "$LOG_LEVEL" -h "ldap:///"
+  fi
 else
-  echo "Starting LDAP"
-  slapd -d "$LOG_LEVEL" -h "ldap:///"
+  echo "Starting LDAP(S)"
+  slapd -d "$LOG_LEVEL" -h "$BIND_URL"
 fi
 
 # run command passed to docker run
